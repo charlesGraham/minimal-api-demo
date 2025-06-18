@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApiDemo.Models;
+using WebApiDemo.Models.Repositories;
 
 namespace WebApiDemo.Controllers
 {
@@ -7,41 +8,10 @@ namespace WebApiDemo.Controllers
     [Route("api/[controller]")]
     public class ShirtsController : ControllerBase
     {
-        private static List<Shirt> shirts = new List<Shirt>
-        {
-            new Shirt
-            {
-                Id = 1,
-                Color = "Red",
-                Size = 10,
-                Brand = "Nike",
-                Gender = "Men",
-                Price = 30.00,
-            },
-            new Shirt
-            {
-                Id = 2,
-                Color = "Blue",
-                Size = 12,
-                Brand = "Adidas",
-                Gender = "Women",
-                Price = 25.00,
-            },
-            new Shirt
-            {
-                Id = 3,
-                Color = "Green",
-                Size = 14,
-                Brand = "Puma",
-                Gender = "Men",
-                Price = 35.00,
-            },
-        };
-
         [HttpGet]
         public List<Shirt> GetShirts()
         {
-            return shirts;
+            return ShirtRepo.GetShirts();
         }
 
         [HttpGet("{id}")]
@@ -50,12 +20,10 @@ namespace WebApiDemo.Controllers
             if (id <= 0)
                 return BadRequest("Invalid ID");
 
-            var foundShirt = shirts.FirstOrDefault(s => s.Id == id);
+            var foundShirt = ShirtRepo.GetShirt(id);
 
             if (foundShirt == null)
-            {
                 return NotFound("Shirt not found.");
-            }
 
             return Ok(foundShirt);
         }
@@ -63,37 +31,46 @@ namespace WebApiDemo.Controllers
         [HttpPost]
         public IActionResult CreateShirt([FromBody] Shirt shirt)
         {
-            shirts.Add(shirt);
-            return CreatedAtAction(nameof(GetShirt), new { id = shirt.Id }, shirt);
+            if (shirt == null)
+                return BadRequest("Failed to create shirt. Shirt details are missing.");
+
+            var createdShirt = ShirtRepo.AddShirt(shirt);
+
+            if (createdShirt == null)
+                return BadRequest("Failed to create shirt.");
+
+            return CreatedAtAction(nameof(GetShirt), new { id = createdShirt.Id }, createdShirt);
         }
 
         [HttpPut("{id}")]
         public IActionResult UpdateShirt(int id, [FromBody] Shirt shirt)
         {
-            var foundShirt = shirts.FirstOrDefault(s => s.Id == id);
+            if (id <= 0)
+                return BadRequest("Invalid ID");
 
-            if (foundShirt == null)
-                return NotFound("Shirt not found.");
+            if (shirt == null)
+                return BadRequest("Failed to update shirt. Shirt details are missing.");
 
-            foundShirt.Color = shirt.Color;
-            foundShirt.Size = shirt.Size;
-            foundShirt.Brand = shirt.Brand;
-            foundShirt.Gender = shirt.Gender;
-            foundShirt.Price = shirt.Price;
+            var updatedShirt = ShirtRepo.UpdateShirt(shirt);
 
-            return Ok(foundShirt);
+            if (updatedShirt == null)
+                return BadRequest("Failed to update shirt.");
+
+            return Ok(updatedShirt);
         }
 
         [HttpDelete("{id}")]
         public IActionResult DeleteShirt(int id)
         {
-            var foundShirt = shirts.FirstOrDefault(s => s.Id == id);
+            if (id <= 0)
+                return BadRequest("Invalid ID");
 
-            if (foundShirt == null)
+            var deletedShirt = ShirtRepo.DeleteShirt(id);
+
+            if (deletedShirt == null)
                 return NotFound("Shirt not found.");
 
-            shirts.Remove(foundShirt);
-            return Ok(foundShirt);
+            return Ok(deletedShirt);
         }
     }
 }
