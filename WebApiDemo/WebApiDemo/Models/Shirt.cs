@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using WebApiDemo.Models.Validations;
 
 namespace WebApiDemo.Models
 {
@@ -10,7 +11,8 @@ namespace WebApiDemo.Models
         public string Color { get; set; } = string.Empty;
 
         [Required]
-        public string Size { get; set; } = string.Empty;
+        [ShirtSizeValidator]
+        public int Size { get; set; }
 
         [Required]
         public string Brand { get; set; } = string.Empty;
