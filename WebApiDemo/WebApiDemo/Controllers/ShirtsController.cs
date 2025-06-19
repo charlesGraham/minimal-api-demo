@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using WebApiDemo.Data;
 using WebApiDemo.Filters;
 using WebApiDemo.Models;
 using WebApiDemo.Models.Repositories;
@@ -10,23 +11,25 @@ namespace WebApiDemo.Controllers
     public class ShirtsController : ControllerBase
     {
         private readonly ShirtRepo _shirtRepo;
+        private readonly ApplicationDbContext _db;
 
-        public ShirtsController(ShirtRepo shirtRepo)
+        public ShirtsController(ShirtRepo shirtRepo, ApplicationDbContext db)
         {
             _shirtRepo = shirtRepo;
+            _db = db;
         }
 
         [HttpGet]
         public List<Shirt> GetShirts()
         {
-            return _shirtRepo.GetShirts();
+            return _db.Shirts.ToList();
         }
 
         [HttpGet("{id}")]
-        [ValidateShirtIdFilter]
+        [TypeFilter(typeof(ValidateShirtIdFilter))]
         public IActionResult GetShirt(int id)
         {
-            return Ok(_shirtRepo.GetShirt(id));
+            return Ok(_db.Shirts.Find(id));
         }
 
         [HttpPost]
@@ -44,7 +47,7 @@ namespace WebApiDemo.Controllers
         }
 
         [HttpPut("{id}")]
-        [ValidateShirtIdFilter]
+        [TypeFilter(typeof(ValidateShirtIdFilter))]
         public IActionResult UpdateShirt(int id, [FromBody] Shirt shirt)
         {
             var updatedShirt = _shirtRepo.UpdateShirt(id, shirt);
@@ -56,7 +59,7 @@ namespace WebApiDemo.Controllers
         }
 
         [HttpDelete("{id}")]
-        [ValidateShirtIdFilter]
+        [TypeFilter(typeof(ValidateShirtIdFilter))]
         public IActionResult DeleteShirt(int id)
         {
             var result = _shirtRepo.DeleteShirt(id);
