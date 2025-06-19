@@ -1,7 +1,13 @@
+using Microsoft.EntityFrameworkCore;
+using WebApiDemo.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("ShirtDb"))
+);
 
 var app = builder.Build();
 
