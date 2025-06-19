@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using WebApp.Data;
 using WebApp.Models;
@@ -20,7 +20,7 @@ namespace WebApp.Controllers
             return View(await webApiExecuter.InvokeGet<List<Shirt>>("shirts"));
         }
 
-        public IActionResult CreateShirt()
+        public IActionResult CreateShirt() 
         {
             return View();
         }
@@ -38,10 +38,11 @@ namespace WebApp.Controllers
                         return RedirectToAction(nameof(Index));
                     }
                 }
-                catch (WebApiException ex)
+                catch(WebApiException ex)
                 {
                     HandleWebApiException(ex);
                 }
+                
             }
 
             return View(shirt);
@@ -57,11 +58,12 @@ namespace WebApp.Controllers
                     return View(shirt);
                 }
             }
-            catch (WebApiException ex)
+            catch(WebApiException ex)
             {
                 HandleWebApiException(ex);
                 return View();
             }
+            
 
             return NotFound();
         }
@@ -76,10 +78,11 @@ namespace WebApp.Controllers
                     await webApiExecuter.InvokePut($"shirts/{shirt.ShirtId}", shirt);
                     return RedirectToAction(nameof(Index));
                 }
-                catch (WebApiException ex)
+                catch(WebApiException ex)
                 {
                     HandleWebApiException(ex);
                 }
+                
             }
 
             return View(shirt);
@@ -92,20 +95,19 @@ namespace WebApp.Controllers
                 await webApiExecuter.InvokeDelete($"shirts/{shirtId}");
                 return RedirectToAction(nameof(Index));
             }
-            catch (WebApiException ex)
+            catch(WebApiException ex)
             {
                 HandleWebApiException(ex);
-                return View(nameof(Index), await webApiExecuter.InvokeGet<List<Shirt>>("shirts"));
+                return View(nameof(Index),
+                    await webApiExecuter.InvokeGet<List<Shirt>>("shirts"));
             }
         }
 
         private void HandleWebApiException(WebApiException ex)
         {
-            if (
-                ex.ErrorResponse != null
-                && ex.ErrorResponse.Errors != null
-                && ex.ErrorResponse.Errors.Count > 0
-            )
+            if (ex.ErrorResponse != null &&
+                ex.ErrorResponse.Errors != null &&
+                ex.ErrorResponse.Errors.Count > 0)
             {
                 foreach (var error in ex.ErrorResponse.Errors)
                 {

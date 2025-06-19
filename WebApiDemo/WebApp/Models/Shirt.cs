@@ -1,24 +1,23 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using WebApp.Models.Validations;
 
 namespace WebApp.Models
 {
     public class Shirt
     {
-        public int Id { get; set; }
+        public int ShirtId { get; set; }
 
         [Required]
-        public string Color { get; set; } = string.Empty;
+        public string? Brand { get; set; }
 
         [Required]
-        [ShirtSizeValidator]
-        public int Size { get; set; }
+        public string? Color { get; set; }
+
+        [Shirt_EnsureCorrectSizing]
+        public int? Size { get; set; }
 
         [Required]
-        public string Brand { get; set; } = string.Empty;
-
-        [Required]
-        public string Gender { get; set; } = string.Empty;
+        public string? Gender { get; set; }
 
         public double? Price { get; set; }
     }
