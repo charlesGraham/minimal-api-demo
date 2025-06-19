@@ -14,19 +14,46 @@ namespace WebApiDemo.Filters
             if (!shirtId.HasValue)
             {
                 context.ModelState.AddModelError("id", "ID is required");
-                context.Result = new BadRequestObjectResult(context.ModelState);
+
+                var problemDetails = new ValidationProblemDetails(context.ModelState)
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Bad Request",
+                    Detail = "ID is required",
+                    Instance = context.HttpContext.Request.Path,
+                };
+
+                context.Result = new BadRequestObjectResult(problemDetails);
                 return;
             }
             else if (shirtId.Value <= 0)
             {
                 context.ModelState.AddModelError("id", "ID is invalid");
-                context.Result = new BadRequestObjectResult(context.ModelState);
+
+                var problemDetails = new ValidationProblemDetails(context.ModelState)
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Bad Request",
+                    Detail = "ID is invalid",
+                    Instance = context.HttpContext.Request.Path,
+                };
+
+                context.Result = new BadRequestObjectResult(problemDetails);
                 return;
             }
             else if (!ShirtRepo.ShirtExists(shirtId.Value))
             {
                 context.ModelState.AddModelError("id", "Shirt not found");
-                context.Result = new NotFoundObjectResult(context.ModelState);
+
+                var problemDetails = new ValidationProblemDetails(context.ModelState)
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Not Found",
+                    Detail = "Shirt not found",
+                    Instance = context.HttpContext.Request.Path,
+                };
+
+                context.Result = new NotFoundObjectResult(problemDetails);
                 return;
             }
         }
