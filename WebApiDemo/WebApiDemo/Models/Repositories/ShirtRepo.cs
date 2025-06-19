@@ -59,6 +59,11 @@ namespace WebApiDemo.Models.Repositories
                 throw new Exception("Shirt already exists.");
 
             shirt.Id = _shirts.Count + 1;
+            var existingShirt = _shirts.FirstOrDefault(s => s.Id == shirt.Id);
+
+            if (existingShirt != null)
+                throw new Exception("Shirt already exists.");
+
             _shirts.Add(shirt);
 
             return _shirts.Last();
