@@ -53,7 +53,7 @@ namespace WebApiDemo.Controllers
         public IActionResult DeleteShirt(int id)
         {
             var result = ShirtRepo.DeleteShirt(id);
-            return result ? NoContent() : NotFound();
+            return NoContent();
         }
     }
 }
