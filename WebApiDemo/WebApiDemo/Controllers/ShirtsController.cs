@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using WebApiDemo.Filters;
 using WebApiDemo.Models;
 using WebApiDemo.Models.Repositories;
 
@@ -15,17 +16,10 @@ namespace WebApiDemo.Controllers
         }
 
         [HttpGet("{id}")]
+        [ValidateShirtIdFilter]
         public IActionResult GetShirt(int id)
         {
-            if (id <= 0)
-                return BadRequest("Invalid ID");
-
-            var foundShirt = ShirtRepo.GetShirt(id);
-
-            if (foundShirt == null)
-                return NotFound("Shirt not found.");
-
-            return Ok(foundShirt);
+            return Ok(ShirtRepo.GetShirt(id));
         }
 
         [HttpPost]
@@ -43,14 +37,9 @@ namespace WebApiDemo.Controllers
         }
 
         [HttpPut("{id}")]
+        [ValidateShirtIdFilter]
         public IActionResult UpdateShirt(int id, [FromBody] Shirt shirt)
         {
-            if (id <= 0)
-                return BadRequest("Invalid ID");
-
-            if (shirt == null)
-                return BadRequest("Failed to update shirt. Shirt details are missing.");
-
             var updatedShirt = ShirtRepo.UpdateShirt(shirt);
 
             if (updatedShirt == null)
@@ -60,17 +49,10 @@ namespace WebApiDemo.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ValidateShirtIdFilter]
         public IActionResult DeleteShirt(int id)
         {
-            if (id <= 0)
-                return BadRequest("Invalid ID");
-
-            var deletedShirt = ShirtRepo.DeleteShirt(id);
-
-            if (deletedShirt == null)
-                return NotFound("Shirt not found.");
-
-            return Ok(deletedShirt);
+            return Ok(ShirtRepo.DeleteShirt(id));
         }
     }
 }
