@@ -52,7 +52,8 @@ namespace WebApiDemo.Controllers
         [ValidateShirtIdFilter]
         public IActionResult DeleteShirt(int id)
         {
-            return Ok(ShirtRepo.DeleteShirt(id));
+            var result = ShirtRepo.DeleteShirt(id);
+            return result ? NoContent() : NotFound();
         }
     }
 }

@@ -1,5 +1,3 @@
-using WebApiDemo.Controllers;
-
 namespace WebApiDemo.Models.Repositories
 {
     public static class ShirtRepo
@@ -81,15 +79,14 @@ namespace WebApiDemo.Models.Repositories
             return existingShirt;
         }
 
-        public static Shirt DeleteShirt(int id)
+        public static bool DeleteShirt(int id)
         {
             var existingShirt = _shirts.FirstOrDefault(s => s.Id == id);
 
             if (existingShirt == null)
                 throw new Exception("Shirt not found.");
 
-            _shirts.Remove(existingShirt);
-            return existingShirt;
+            return _shirts.Remove(existingShirt);
         }
     }
 }
