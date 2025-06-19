@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApiDemo.Data;
 using WebApiDemo.Filters;
+using WebApiDemo.Filters.ActionFilters;
 using WebApiDemo.Models;
 using WebApiDemo.Models.Repositories;
 
@@ -29,21 +30,17 @@ namespace WebApiDemo.Controllers
         [TypeFilter(typeof(ValidateShirtIdFilter))]
         public IActionResult GetShirt(int id)
         {
-            return Ok(_db.Shirts.Find(id));
+            return Ok(HttpContext.Items["shirt"]);
         }
 
         [HttpPost]
+        [TypeFilter(typeof(ValidateShirtCreateFilter))]
         public IActionResult CreateShirt([FromBody] Shirt shirt)
         {
-            if (shirt == null)
-                return BadRequest("Failed to create shirt. Shirt details are missing.");
+            _db.Shirts.Add(shirt);
+            _db.SaveChanges();
 
-            var createdShirt = _shirtRepo.AddShirt(shirt);
-
-            if (createdShirt == null)
-                return BadRequest("Failed to create shirt.");
-
-            return CreatedAtAction(nameof(GetShirt), new { id = createdShirt.Id }, createdShirt);
+            return CreatedAtAction(nameof(GetShirt), new { id = shirt.Id }, shirt);
         }
 
         [HttpPut("{id}")]
