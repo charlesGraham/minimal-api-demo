@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApiDemo.Data;
-using WebApiDemo.Filters;
 using WebApiDemo.Filters.ActionFilters;
+using WebApiDemo.Filters.ExceptionFilters;
 using WebApiDemo.Models;
 using WebApiDemo.Models.Repositories;
 
@@ -45,14 +45,20 @@ namespace WebApiDemo.Controllers
 
         [HttpPut("{id}")]
         [TypeFilter(typeof(ValidateShirtIdFilter))]
+        [TypeFilter(typeof(ValidateShirtUpdateFilter))]
+        [TypeFilter(typeof(ShirtHandleUpdateExceptionFilter))]
         public IActionResult UpdateShirt(int id, [FromBody] Shirt shirt)
         {
-            var updatedShirt = _shirtRepo.UpdateShirt(id, shirt);
+            var shirtToUpdate = HttpContext.Items["shirt"] as Shirt;
 
-            if (updatedShirt == null)
-                return BadRequest("Failed to update shirt.");
+            shirtToUpdate.Brand = shirt.Brand;
+            shirtToUpdate.Size = shirt.Size;
+            shirtToUpdate.Color = shirt.Color;
+            shirtToUpdate.Gender = shirt.Gender;
+            shirtToUpdate.Price = shirt.Price;
 
-            return Ok(updatedShirt);
+            _db.SaveChanges();
+            return Ok(shirtToUpdate);
         }
 
         [HttpDelete("{id}")]
