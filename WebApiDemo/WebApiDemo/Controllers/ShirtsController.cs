@@ -65,12 +65,12 @@ namespace WebApiDemo.Controllers
         [TypeFilter(typeof(ValidateShirtIdFilter))]
         public IActionResult DeleteShirt(int id)
         {
-            var result = _shirtRepo.DeleteShirt(id);
+            var shirtToDelete = HttpContext.Items["shirt"] as Shirt;
 
-            if (!result)
-                return BadRequest("Failed to delete shirt.");
+            _db.Shirts.Remove(shirtToDelete);
+            _db.SaveChanges();
 
-            return NoContent();
+            return Ok(shirtToDelete);
         }
     }
 }
