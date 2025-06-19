@@ -68,3 +68,27 @@ nunit-*.xml
 # App settings files
 **/appsettings.json
 **/appsettings.*.json
+
+# Rider and Visual Studio user-specific files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
+
+# Rider project settings
+.idea/
+
+# Publish output
+dist/
+publish/
+
+# Local database files
+*.db
+*.mdf
+*.ldf
+
+# Crash dumps and logs
+*.stackdump
+*.log
