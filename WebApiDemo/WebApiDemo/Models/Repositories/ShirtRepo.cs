@@ -1,76 +1,47 @@
+using WebApiDemo.Data;
+
 namespace WebApiDemo.Models.Repositories
 {
-    public static class ShirtRepo
+    public class ShirtRepo
     {
-        private static List<Shirt> _shirts = new List<Shirt>
-        {
-            new Shirt
-            {
-                Id = 1,
-                Color = "Red",
-                Size = 10,
-                Brand = "Nike",
-                Gender = "Men",
-                Price = 30.00,
-            },
-            new Shirt
-            {
-                Id = 2,
-                Color = "Blue",
-                Size = 12,
-                Brand = "Adidas",
-                Gender = "Women",
-                Price = 25.00,
-            },
-            new Shirt
-            {
-                Id = 3,
-                Color = "Green",
-                Size = 14,
-                Brand = "Puma",
-                Gender = "Men",
-                Price = 35.00,
-            },
-        };
+        private readonly ApplicationDbContext _db;
 
-        public static bool ShirtExists(int id)
+        public ShirtRepo(ApplicationDbContext db)
         {
-            return _shirts.Any(s => s.Id == id);
+            _db = db;
         }
 
-        public static List<Shirt> GetShirts()
+        public bool ShirtExists(int id)
         {
-            return _shirts;
+            return _db.Shirts.Any(s => s.Id == id);
         }
 
-        public static Shirt GetShirt(int id)
+        public List<Shirt> GetShirts()
         {
-            var foundShirt = _shirts.FirstOrDefault(s => s.Id == id);
+            return _db.Shirts.ToList();
+        }
 
-            if (foundShirt == null)
+        public Shirt GetShirt(int id)
+        {
+            if (!ShirtExists(id))
                 throw new Exception("Shirt not found.");
 
-            return foundShirt;
+            return _db.Shirts.FirstOrDefault(s => s.Id == id)
+                ?? throw new Exception("Shirt not found.");
         }
 
-        public static Shirt AddShirt(Shirt shirt)
+        public Shirt AddShirt(Shirt shirt)
         {
-            shirt.Id = _shirts.Count + 1;
-
-            if (ShirtExists(shirt.Id))
-                throw new Exception("Shirt already exists.");
-
-            _shirts.Add(shirt);
-
-            return _shirts.Last();
+            _db.Shirts.Add(shirt);
+            _db.SaveChanges();
+            return shirt;
         }
 
-        public static Shirt UpdateShirt(Shirt shirt)
+        public Shirt UpdateShirt(int id, Shirt shirt)
         {
-            var existingShirt = _shirts.FirstOrDefault(s => s.Id == shirt.Id);
-
-            if (existingShirt == null)
-                throw new Exception("Shirt not found.");
+            var existingShirt =
+                _db.Shirts.FirstOrDefault(s => s.Id == id)
+                ?? throw new Exception("Shirt not found.");
 
             existingShirt.Color = shirt.Color;
             existingShirt.Size = shirt.Size;
@@ -78,17 +49,20 @@ namespace WebApiDemo.Models.Repositories
             existingShirt.Gender = shirt.Gender;
             existingShirt.Price = shirt.Price;
 
+            _db.SaveChanges();
+
             return existingShirt;
         }
 
-        public static bool DeleteShirt(int id)
+        public bool DeleteShirt(int id)
         {
-            var existingShirt = _shirts.FirstOrDefault(s => s.Id == id);
+            var existingShirt = _db.Shirts.FirstOrDefault(s => s.Id == id);
 
             if (existingShirt == null)
                 throw new Exception("Shirt not found.");
 
-            return _shirts.Remove(existingShirt);
+            _db.Shirts.Remove(existingShirt);
+            return _db.SaveChanges() > 0;
         }
     }
 }

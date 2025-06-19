@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WebApiDemo.Data;
+using WebApiDemo.Models.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("ShirtDb"))
 );
+builder.Services.AddScoped<ShirtRepo>();
 
 var app = builder.Build();
 

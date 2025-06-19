@@ -9,17 +9,24 @@ namespace WebApiDemo.Controllers
     [Route("api/[controller]")]
     public class ShirtsController : ControllerBase
     {
+        private readonly ShirtRepo _shirtRepo;
+
+        public ShirtsController(ShirtRepo shirtRepo)
+        {
+            _shirtRepo = shirtRepo;
+        }
+
         [HttpGet]
         public List<Shirt> GetShirts()
         {
-            return ShirtRepo.GetShirts();
+            return _shirtRepo.GetShirts();
         }
 
         [HttpGet("{id}")]
         [ValidateShirtIdFilter]
         public IActionResult GetShirt(int id)
         {
-            return Ok(ShirtRepo.GetShirt(id));
+            return Ok(_shirtRepo.GetShirt(id));
         }
 
         [HttpPost]
@@ -28,7 +35,7 @@ namespace WebApiDemo.Controllers
             if (shirt == null)
                 return BadRequest("Failed to create shirt. Shirt details are missing.");
 
-            var createdShirt = ShirtRepo.AddShirt(shirt);
+            var createdShirt = _shirtRepo.AddShirt(shirt);
 
             if (createdShirt == null)
                 return BadRequest("Failed to create shirt.");
@@ -40,7 +47,7 @@ namespace WebApiDemo.Controllers
         [ValidateShirtIdFilter]
         public IActionResult UpdateShirt(int id, [FromBody] Shirt shirt)
         {
-            var updatedShirt = ShirtRepo.UpdateShirt(shirt);
+            var updatedShirt = _shirtRepo.UpdateShirt(id, shirt);
 
             if (updatedShirt == null)
                 return BadRequest("Failed to update shirt.");
@@ -52,7 +59,11 @@ namespace WebApiDemo.Controllers
         [ValidateShirtIdFilter]
         public IActionResult DeleteShirt(int id)
         {
-            var result = ShirtRepo.DeleteShirt(id);
+            var result = _shirtRepo.DeleteShirt(id);
+
+            if (!result)
+                return BadRequest("Failed to delete shirt.");
+
             return NoContent();
         }
     }

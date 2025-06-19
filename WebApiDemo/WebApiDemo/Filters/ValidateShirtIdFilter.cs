@@ -41,21 +41,21 @@ namespace WebApiDemo.Filters
                 context.Result = new BadRequestObjectResult(problemDetails);
                 return;
             }
-            else if (!ShirtRepo.ShirtExists(shirtId.Value))
-            {
-                context.ModelState.AddModelError("id", "Shirt not found");
+            // else if (!_shirtRepo.ShirtExists(shirtId.Value))
+            // {
+            //     context.ModelState.AddModelError("id", "Shirt not found");
 
-                var problemDetails = new ValidationProblemDetails(context.ModelState)
-                {
-                    Status = StatusCodes.Status404NotFound,
-                    Title = "Not Found",
-                    Detail = "Shirt not found",
-                    Instance = context.HttpContext.Request.Path,
-                };
+            //     var problemDetails = new ValidationProblemDetails(context.ModelState)
+            //     {
+            //         Status = StatusCodes.Status404NotFound,
+            //         Title = "Not Found",
+            //         Detail = "Shirt not found",
+            //         Instance = context.HttpContext.Request.Path,
+            //     };
 
-                context.Result = new NotFoundObjectResult(problemDetails);
-                return;
-            }
+            //     context.Result = new NotFoundObjectResult(problemDetails);
+            //     return;
+            // }
         }
     }
 }
