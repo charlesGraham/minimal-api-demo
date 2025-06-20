@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApiDemo.Data;
 using WebApiDemo.Filters.ActionFilters;
+using WebApiDemo.Filters.AuthFilters;
 using WebApiDemo.Filters.ExceptionFilters;
 using WebApiDemo.Models;
 using WebApiDemo.Models.Repositories;
@@ -9,6 +10,7 @@ namespace WebApiDemo.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [JwtAuthFilter]
     public class ShirtsController : ControllerBase
     {
         private readonly ShirtRepo _shirtRepo;

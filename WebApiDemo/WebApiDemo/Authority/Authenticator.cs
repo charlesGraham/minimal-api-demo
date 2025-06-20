@@ -41,5 +41,40 @@ namespace WebApiDemo.Authority
             var tokenHandler = new JsonWebTokenHandler();
             return tokenHandler.CreateToken(tokenDescriptor);
         }
+
+        public static async Task<bool> VerifyTokenAsync(string tokenString, string securityKey)
+        {
+            if (string.IsNullOrWhiteSpace(tokenString) ||  string.IsNullOrWhiteSpace(securityKey))
+                return false;
+
+            var keyBytes = System.Text.Encoding.UTF8.GetBytes(securityKey);
+            var tokenHandler =  new JsonWebTokenHandler();
+
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+                ValidateIssuer = false, // for internal use only
+                ValidateAudience = false, // for internal use only
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+
+            };
+
+            try
+            {
+                var result = await tokenHandler.ValidateTokenAsync(tokenString, validationParameters);
+                return result.IsValid;
+            }
+            catch (SecurityTokenMalformedException ex)
+            {
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
+
 }
