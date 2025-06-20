@@ -25,7 +25,11 @@ namespace WebApiDemo.Controllers
                 return Ok(
                     new
                     {
-                        access_token = Authenticator.CreateToken(credential.ClientId, expiresAt, _configuration["SecurityKey"] ?? string.Empty),
+                        access_token = Authenticator.CreateToken(
+                            credential.ClientId,
+                            expiresAt,
+                            _configuration["SecurityKey"] ?? string.Empty
+                        ),
                         expires_at = expiresAt,
                     }
                 );
@@ -40,6 +44,5 @@ namespace WebApiDemo.Controllers
                 return new UnauthorizedObjectResult(problemDetails);
             }
         }
-
     }
 }

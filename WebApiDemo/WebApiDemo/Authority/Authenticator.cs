@@ -3,7 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace WebApiDemo.Authority
 {
-  public class Authenticator
+    public static class Authenticator
     {
         public static bool Authenticate(string clientId, string secret)
         {
@@ -13,17 +13,13 @@ namespace WebApiDemo.Authority
 
             return app.ClientId == clientId && app.ClientSecret == secret;
         }
-        
+
         public static string CreateToken(string clientId, DateTime expiresAt, string strSecretKey)
         {
             var app = AppRepo.GetApplicationByClientId(clientId);
 
             var signingCredentials = new SigningCredentials(
-                new SymmetricSecurityKey(
-                    System.Text.Encoding.UTF8.GetBytes(
-                        strSecretKey
-                    )
-                ),
+                new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(strSecretKey)),
                 SecurityAlgorithms.HmacSha256Signature
             );
 
