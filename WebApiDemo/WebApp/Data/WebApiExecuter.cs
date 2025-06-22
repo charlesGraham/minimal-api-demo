@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Text.Json;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace WebApp.Data
 {
@@ -16,7 +16,8 @@ namespace WebApp.Data
         public WebApiExecuter(
             IHttpClientFactory httpClientFactory,
             IConfiguration configuration,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor
+        )
         {
             this.httpClientFactory = httpClientFactory;
             this.configuration = configuration;
@@ -79,30 +80,28 @@ namespace WebApp.Data
                 token = JsonConvert.DeserializeObject<JwtToken>(strToken);
             }
 
-            if (token == null ||
-                token.ExpiresAt <= DateTime.UtcNow)
+            if (token == null || token.ExpiresAt <= DateTime.UtcNow)
             {
                 var clientId = configuration.GetValue<string>("ClientId");
                 var secret = configuration.GetValue<string>("Secret");
 
-                // Authenticate 
                 var authoClient = httpClientFactory.CreateClient(authApiName);
-                var response = await authoClient.PostAsJsonAsync("auth", new AppCredential
-                {
-                    ClientId = clientId,
-                    Secret = secret
-                });
+                var response = await authoClient.PostAsJsonAsync(
+                    "auth",
+                    new AppCredential { ClientId = clientId, Secret = secret }
+                );
                 response.EnsureSuccessStatusCode();
 
-                // Get the JWT 
                 strToken = await response.Content.ReadAsStringAsync();
                 token = JsonConvert.DeserializeObject<JwtToken>(strToken);
 
                 httpContextAccessor.HttpContext?.Session.SetString("access_token", strToken);
-            }            
+            }
 
-            // Pass the JWT to endpoints through the http headers
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token?.AccessToken);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                "Bearer",
+                token?.AccessToken
+            );
         }
     }
 }
